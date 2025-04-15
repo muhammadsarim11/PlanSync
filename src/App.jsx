@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   BarChart,
@@ -11,227 +11,233 @@ import {
 } from "recharts";
 
 const App = () => {
-  // Sample data - replace with your actual schedule
-  const [days, setDays] = useState([
-    {
-      name: "Monday",
-      planned: [
-        {
-          activity: "Study",
-          startTime: "08:00",
-          endTime: "10:00",
-          category: "education",
-        },
-        {
-          activity: "Project",
-          startTime: "11:00",
-          endTime: "13:00",
-          category: "work",
-        },
-      ],
-      actual: [
-        {
-          activity: "Study",
-          startTime: "08:30",
-          endTime: "10:30",
-          category: "education",
-        },
-        {
-          activity: "Social Media",
-          startTime: "11:00",
-          endTime: "12:30",
-          category: "distraction",
-        },
-      ],
-    },
-    {
-      name: "Tuesday",
-      planned: [
-        {
-          activity: "Research",
-          startTime: "09:00",
-          endTime: "11:00",
-          category: "work",
-        },
-        {
-          activity: "Meeting",
-          startTime: "14:00",
-          endTime: "15:00",
-          category: "work",
-        },
-      ],
-      actual: [
-        {
-          activity: "Research",
-          startTime: "10:00",
-          endTime: "11:30",
-          category: "work",
-        },
-        {
-          activity: "Extended Meeting",
-          startTime: "14:30",
-          endTime: "16:00",
-          category: "work",
-        },
-      ],
-    },
-    {
-      name: "Wednesday",
-      planned: [
-        {
-          activity: "Writing",
-          startTime: "08:00",
-          endTime: "10:00",
-          category: "work",
-        },
-        {
-          activity: "Team Discussion",
-          startTime: "13:00",
-          endTime: "14:00",
-          category: "work",
-        },
-      ],
-      actual: [
-        {
-          activity: "Writing",
-          startTime: "08:30",
-          endTime: "10:30",
-          category: "work",
-        },
-        {
-          activity: "Extended Discussion",
-          startTime: "13:15",
-          endTime: "14:45",
-          category: "work",
-        },
-      ],
-    },
-    {
-      name: "Thursday",
-      planned: [
-        {
-          activity: "Exercise",
-          startTime: "07:00",
-          endTime: "08:00",
-          category: "health",
-        },
-        {
-          activity: "Coding",
-          startTime: "10:00",
-          endTime: "12:00",
-          category: "work",
-        },
-      ],
-      actual: [
-        {
-          activity: "Exercise",
-          startTime: "07:15",
-          endTime: "08:15",
-          category: "health",
-        },
-        {
-          activity: "Debugging",
-          startTime: "10:30",
-          endTime: "12:30",
-          category: "work",
-        },
-      ],
-    },
-    {
-      name: "Friday",
-      planned: [
-        {
-          activity: "Reading",
-          startTime: "09:00",
-          endTime: "10:00",
-          category: "education",
-        },
-        {
-          activity: "Team Meeting",
-          startTime: "15:00",
-          endTime: "16:00",
-          category: "work",
-        },
-      ],
-      actual: [
-        {
-          activity: "Reading",
-          startTime: "09:15",
-          endTime: "10:15",
-          category: "education",
-        },
-        {
-          activity: "Extended Team Meeting",
-          startTime: "15:30",
-          endTime: "16:30",
-          category: "work",
-        },
-      ],
-    },
-    {
-      name: "Saturday",
-      planned: [
-        {
-          activity: "Gardening",
-          startTime: "08:00",
-          endTime: "09:00",
-          category: "leisure",
-        },
-        {
-          activity: "Research",
-          startTime: "11:00",
-          endTime: "13:00",
-          category: "work",
-        },
-      ],
-      actual: [
-        {
-          activity: "Gardening",
-          startTime: "08:30",
-          endTime: "09:30",
-          category: "leisure",
-        },
-        {
-          activity: "Research",
-          startTime: "11:15",
-          endTime: "13:15",
-          category: "work",
-        },
-      ],
-    },
-    {
-      name: "Sunday",
-      planned: [
-        {
-          activity: "Meditation",
-          startTime: "07:00",
-          endTime: "07:30",
-          category: "health",
-        },
-        {
-          activity: "Family Time",
-          startTime: "18:00",
-          endTime: "20:00",
-          category: "leisure",
-        },
-      ],
-      actual: [
-        {
-          activity: "Meditation",
-          startTime: "07:05",
-          endTime: "07:35",
-          category: "health",
-        },
-        {
-          activity: "Family Time",
-          startTime: "18:15",
-          endTime: "20:15",
-          category: "leisure",
-        },
-      ],
-    },
-  ]);
+  // Retrieve data from localStorage or use default data
+  const getInitialDays = () => {
+    const storedDays = localStorage.getItem("days");
+    return storedDays
+      ? JSON.parse(storedDays)
+      : [
+          {
+            name: "Monday",
+            planned: [
+              {
+                activity: "Study",
+                startTime: "08:00",
+                endTime: "10:00",
+                category: "education",
+              },
+              {
+                activity: "Project",
+                startTime: "11:00",
+                endTime: "13:00",
+                category: "work",
+              },
+            ],
+            actual: [
+              {
+                activity: "Study",
+                startTime: "08:30",
+                endTime: "10:30",
+                category: "education",
+              },
+              {
+                activity: "Social Media",
+                startTime: "11:00",
+                endTime: "12:30",
+                category: "distraction",
+              },
+            ],
+          },
+          {
+            name: "Tuesday",
+            planned: [
+              {
+                activity: "Research",
+                startTime: "09:00",
+                endTime: "11:00",
+                category: "work",
+              },
+              {
+                activity: "Meeting",
+                startTime: "14:00",
+                endTime: "15:00",
+                category: "work",
+              },
+            ],
+            actual: [
+              {
+                activity: "Research",
+                startTime: "10:00",
+                endTime: "11:30",
+                category: "work",
+              },
+              {
+                activity: "Extended Meeting",
+                startTime: "14:30",
+                endTime: "16:00",
+                category: "work",
+              },
+            ],
+          },
+          {
+            name: "Wednesday",
+            planned: [
+              {
+                activity: "Writing",
+                startTime: "08:00",
+                endTime: "10:00",
+                category: "work",
+              },
+              {
+                activity: "Team Discussion",
+                startTime: "13:00",
+                endTime: "14:00",
+                category: "work",
+              },
+            ],
+            actual: [
+              {
+                activity: "Writing",
+                startTime: "08:30",
+                endTime: "10:30",
+                category: "work",
+              },
+              {
+                activity: "Extended Discussion",
+                startTime: "13:15",
+                endTime: "14:45",
+                category: "work",
+              },
+            ],
+          },
+          {
+            name: "Thursday",
+            planned: [
+              {
+                activity: "Exercise",
+                startTime: "07:00",
+                endTime: "08:00",
+                category: "health",
+              },
+              {
+                activity: "Coding",
+                startTime: "10:00",
+                endTime: "12:00",
+                category: "work",
+              },
+            ],
+            actual: [
+              {
+                activity: "Exercise",
+                startTime: "07:15",
+                endTime: "08:15",
+                category: "health",
+              },
+              {
+                activity: "Debugging",
+                startTime: "10:30",
+                endTime: "12:30",
+                category: "work",
+              },
+            ],
+          },
+          {
+            name: "Friday",
+            planned: [
+              {
+                activity: "Reading",
+                startTime: "09:00",
+                endTime: "10:00",
+                category: "education",
+              },
+              {
+                activity: "Team Meeting",
+                startTime: "15:00",
+                endTime: "16:00",
+                category: "work",
+              },
+            ],
+            actual: [
+              {
+                activity: "Reading",
+                startTime: "09:15",
+                endTime: "10:15",
+                category: "education",
+              },
+              {
+                activity: "Extended Team Meeting",
+                startTime: "15:30",
+                endTime: "16:30",
+                category: "work",
+              },
+            ],
+          },
+          {
+            name: "Saturday",
+            planned: [
+              {
+                activity: "Gardening",
+                startTime: "08:00",
+                endTime: "09:00",
+                category: "leisure",
+              },
+              {
+                activity: "Research",
+                startTime: "11:00",
+                endTime: "13:00",
+                category: "work",
+              },
+            ],
+            actual: [
+              {
+                activity: "Gardening",
+                startTime: "08:30",
+                endTime: "09:30",
+                category: "leisure",
+              },
+              {
+                activity: "Research",
+                startTime: "11:15",
+                endTime: "13:15",
+                category: "work",
+              },
+            ],
+          },
+          {
+            name: "Sunday",
+            planned: [
+              {
+                activity: "Meditation",
+                startTime: "07:00",
+                endTime: "07:30",
+                category: "health",
+              },
+              {
+                activity: "Family Time",
+                startTime: "18:00",
+                endTime: "20:00",
+                category: "leisure",
+              },
+            ],
+            actual: [
+              {
+                activity: "Meditation",
+                startTime: "07:05",
+                endTime: "07:35",
+                category: "health",
+              },
+              {
+                activity: "Family Time",
+                startTime: "18:15",
+                endTime: "20:15",
+                category: "leisure",
+              },
+            ],
+          },
+        ];
+  };
 
+  const [days, setDays] = useState(getInitialDays);
   const [activeDay, setActiveDay] = useState(0);
   const [newActivity, setNewActivity] = useState({
     name: "",
@@ -240,6 +246,11 @@ const App = () => {
     category: "work",
     type: "planned",
   });
+
+  // Save days to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("days", JSON.stringify(days));
+  }, [days]);
 
   // Calculate time metrics
   const calculateMetrics = () => {
